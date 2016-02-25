@@ -3,13 +3,18 @@
 #include <cmath>
 #include <limits>
 
-class complex_t {
-  protected:
-    bool isequal( double a, double b ) {
-      return ( std::abs(a - b) <= std::numeric_limits<double>::epsilon() *
-        std::max( std::abs(a), std::abs(b) ) );
-    }
+static bool isequal( double a, double b ) {
+  return ( std::abs(a - b) <= std::numeric_limits<double>::epsilon() *
+    std::max( std::abs(a), std::abs(b) ) );
+}
 
+static bool angle2pi( double x ) {
+  x = std::fmod( x, 2.0*M_PI );
+  if (x < 0) { x += 2.0*M_PI; }
+  return x;
+}
+
+class complex_t {
   public:
     double real;
     double imag;
@@ -19,32 +24,32 @@ class complex_t {
       imag = im;
     }
 
-    virtual complex_t& operator= ( const complex_t& num ) {
+    complex_t& operator= ( const complex_t& num ) {
       real = num.real;
       imag = num.imag;
       return *this;
     }
 
-    virtual bool operator== ( const complex_t& num ) {
+    bool operator== ( const complex_t& num ) const {
       return isequal( real, num.real ) && isequal( imag, num.imag );
     }
 
-    virtual complex_t operator+ ( const complex_t& num ) {
+    complex_t operator+ ( const complex_t& num ) const {
       return complex_t( real + num.real, imag + num.imag );
     }
 
-    virtual complex_t operator- ( const complex_t& num ) {
+    complex_t operator- ( const complex_t& num ) const {
       return complex_t( real - num.real, imag - num.imag );
     }
 
-    virtual complex_t operator* ( const complex_t& num ) {
+    complex_t operator* ( const complex_t& num ) const {
       return complex_t(
         real*num.real - imag*num.imag,
         real*num.imag + imag*num.real
       );
     }
 
-    virtual complex_t operator/ ( const complex_t& num ) {
+    complex_t operator/ ( const complex_t& num ) const {
       double divisor = num.real*num.real + num.imag*num.imag;
       return complex_t(
         (real*num.real + imag*num.imag) / divisor,
@@ -52,11 +57,11 @@ class complex_t {
       );
     }
 
-    virtual double abs() {
+    virtual double abs() const {
       return std::sqrt( real*real + imag*imag );
     }
 
-    virtual complex_t pow( double power ) {
+    virtual complex_t pow( double power ) const {
       double p_abs = std::pow( abs(), power );
       double p_angle = power * std::atan2( imag, real );
       return complex_t(
@@ -65,22 +70,18 @@ class complex_t {
       );
     }
 
-    bool operator!= ( const complex_t& num ) {
+    bool operator!= ( const complex_t& num ) const {
       return !(*this == num);
     }
-
     complex_t& operator+= ( const complex_t& num ) {
       return (*this = *this + num);
     }
-
     complex_t& operator-= ( const complex_t& num ) {
       return (*this = *this - num);
     }
-
     complex_t& operator*= ( const complex_t& num ) {
       return (*this = *this * num);
     }
-
     complex_t& operator/= ( const complex_t& num ) {
       return (*this = *this / num);
     }
@@ -102,7 +103,7 @@ class complex_polar_t : public complex_t {
     }
 
     //Cartesian coordinates
-    complex_t to_xy() {
+    complex_t to_xy() const {
       return complex_t(
         radius * std::cos(angle),
         radius * std::sin(angle)
@@ -115,38 +116,50 @@ class complex_polar_t : public complex_t {
       return *this;
     }
 
-    bool operator== ( const complex_polar_t& num ) {
+    bool operator== ( const complex_polar_t& num ) const {
       return isequal( radius, num.radius ) &&
-             isequal( std::sin(angle), std::sin(num.angle) ) &&
-             isequal( std::cos(angle), std::cos(num.angle) );
+             isequal( angle2pi(angle), angle2pi(num.angle) );
     }
 
-    complex_polar_t operator+ ( const complex_polar_t& num ) {
-      return complex_polar_t( to_xy() + const_cast<complex_polar_t&>(num).to_xy() );
+    complex_polar_t operator+ ( const complex_polar_t& num ) const {
+      return complex_polar_t( to_xy() + num.to_xy() );
     }
 
-    complex_polar_t operator- ( const complex_polar_t& num ) {
-      return complex_polar_t( to_xy() - const_cast<complex_polar_t&>(num).to_xy() );
+    complex_polar_t operator- ( const complex_polar_t& num ) const {
+      return complex_polar_t( to_xy() - num.to_xy() );
     }
 
-    complex_polar_t operator* ( const complex_polar_t& num ) {
+    complex_polar_t operator* ( const complex_polar_t& num ) const {
       return complex_polar_t( radius*num.radius, angle+num.angle );
     }
 
-    complex_polar_t operator/ ( const complex_polar_t& num ) {
+    complex_polar_t operator/ ( const complex_polar_t& num ) const {
       return complex_polar_t( radius/num.radius, angle-num.angle );
     }
 
-    double abs() {
+    double abs() const {
       return radius;
     }
 
-    complex_t pow( double power ) {
+    complex_t pow( double power ) const {
       double p_rad = std::pow( radius, power );
       double p_ang = angle * power;
-      return complex_polar_t(
-        p_rad * std::cos(p_ang),
-        p_rad * std::sin(p_ang)
-      );
+      return complex_t( p_rad * std::cos(p_ang), p_rad * std::sin(p_ang) );
+    }
+
+    bool operator!= ( const complex_polar_t& num ) const {
+      return !(*this == num);
+    }
+    complex_polar_t& operator+= ( const complex_polar_t& num ) {
+      return (*this = *this + num);
+    }
+    complex_polar_t& operator-= ( const complex_polar_t& num ) {
+      return (*this = *this - num);
+    }
+    complex_polar_t& operator*= ( const complex_polar_t& num ) {
+      return (*this = *this * num);
+    }
+    complex_polar_t& operator/= ( const complex_polar_t& num ) {
+      return (*this = *this / num);
     }
 };
