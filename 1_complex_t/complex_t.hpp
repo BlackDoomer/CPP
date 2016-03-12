@@ -24,6 +24,8 @@ class complex_t {
       imag = im;
     }
 
+    virtual ~complex_t() {}
+
     complex_t& operator= ( const complex_t& num ) {
       real = num.real;
       imag = num.imag;
