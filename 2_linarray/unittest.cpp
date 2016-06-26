@@ -180,11 +180,13 @@ TEST_CASE( "linarray data access", "[data]" ) {
   SECTION( "index access operator, front() and back() access methods" ) {
     t_linarray_std::const_iterator iter_fw = larr_test.cbegin();
     for (size_type i = 0; i < larr_test.size(); ++i) {
-      REQUIRE( larr_test[i] == *iter_fw++ );
+      if( larr_test[i] != *iter_fw++ )
+        FAIL( "linarray[i] != *forward_iterator : i == " << i );
     }
     t_linarray_std::const_reverse_iterator iter_rv = larr_test.crbegin();
     for (size_type i = larr_test.size(); i > 0; --i) {
-      REQUIRE( larr_test[i-1] == *iter_rv++ );
+      if( larr_test[i-1] != *iter_rv++ )
+        FAIL( "linarray[i] != *reverse_iterator : i == " << i-1 );
     }
     REQUIRE( larr_test.front() == *--iter_rv );
     REQUIRE( larr_test.back() == *--iter_fw );
