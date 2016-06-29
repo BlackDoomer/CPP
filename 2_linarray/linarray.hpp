@@ -50,6 +50,7 @@ namespace {
         alloc_traits::deallocate( allocator, data.start, capacity() );
       }
 
+      inline pointer buffer() { return data.start; }
       inline iterator begin() { return data.start; }
       inline iterator end() { return data.end; }
       inline const size_type capacity() const { return data.end - data.start; }
@@ -155,6 +156,9 @@ class linarray { __LINARRAY_HPP_TYPEDEF_MIXIN( Allocator );
 
     inline const_reference back() const { return *(end() - 1); }
     inline reference back() { return *(end() - 1); }
+
+    inline const_pointer data() const { return s_data->buffer(); }
+    inline pointer data() { return s_data->buffer(); }
 
     /* capacity */
     inline bool empty() const { return s_count == 0; }

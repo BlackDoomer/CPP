@@ -191,6 +191,13 @@ TEST_CASE( "linarray data access", "[data]" ) {
     REQUIRE( larr_test.front() == *--iter_rv );
     REQUIRE( larr_test.back() == *--iter_fw );
   }
+  SECTION( "direct access by pointer" ) {
+    t_linarray_std::pointer direct = larr_test.data();
+    for (size_type i = 0; i < larr_test.size(); ++i) {
+      if( direct[i] != larr_test[i] )
+        FAIL( "linarray[i] != (linarray.data())[i] : i == " << i );
+    }
+  }
 }
 
 TEST_CASE( "linarray capacity methods", "[size]" ) {
