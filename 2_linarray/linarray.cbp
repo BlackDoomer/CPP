@@ -28,6 +28,22 @@
 					<Add option="-s" />
 				</Linker>
 			</Target>
+			<Target title="Debug (gcov)">
+				<Option output="linarray" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option parameters="-d yes" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-fprofile-arcs" />
+					<Add option="-ftest-coverage" />
+				</Compiler>
+				<Linker>
+					<Add option="-fprofile-arcs" />
+					<Add option="-ftest-coverage" />
+				</Linker>
+			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-pedantic" />
