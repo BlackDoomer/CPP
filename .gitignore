@@ -8,6 +8,10 @@
 *.obj
 *.lib
 
+*.gcda
+*.gcno
+*.gcov
+
 *.def
 *.depend
 *.layout
